@@ -1,0 +1,118 @@
+﻿@page
+@model Page.Pages.Categories.IndexModel
+@{
+}
+<h1>Categories</h1>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+    Create New Category
+</button>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Category ID</th>
+            <th>Category Name</th>
+            <th>Category Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model.Categories)
+        {
+            <tr>
+                <td>@category.CategoryId</td>
+                <td>@category.CategoryName</td>
+                <td>@category.CategoryDesciption</td>
+                <td>
+                    <button class="btn btn-primary" onclick="editCategory(@category.CategoryId)">Edit</button>
+                    <form method="post" asp-page-handler="Delete" class="d-inline">
+                        <input type="hidden" name="id" value="@category.CategoryId" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Create Category Modal -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1" aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCategoryModalLabel">Create Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createCategoryForm" method="post" asp-page-handler="Create">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="Category.CategoryName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Category Description</label>
+                        <input type="text" class="form-control" id="categoryDescription" name="Category.CategoryDescription">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm('createCategoryForm')">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm" method="post" asp-page-handler="Update">
+                    <input type="hidden" id="editCategoryId" name="Category.CategoryId">
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="editCategoryName" name="Category.CategoryName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryDescription" class="form-label">Category Description</label>
+                        <input type="text" class="form-control" id="editCategoryDescription" name="Category.CategoryDescription">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm('editCategoryForm')">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function submitForm(formId) {
+            document.getElementById(formId).submit();
+        }
+
+        function editCategory(id) {
+            $.ajax({
+                type: 'GET',
+                url: '/Categories/Get?id=' + id,
+                success: function (data) {
+                    $('#editCategoryId').val(data.categoryId);
+                    $('#editCategoryName').val(data.categoryName);
+                    $('#editCategoryDescription').val(data.categoryDescription);
+                    $('#editCategoryModal').modal('show');
+                },
+                error: function () {
+                    alert('Failed to load category.');
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,41 @@
+﻿@page
+@model Page.Pages.ReportModel
+@{
+}
+<h1>News Articles Report</h1>
+<form method="post">
+    <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="StartDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+    </div>
+    <div>
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="EndDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+    </div>
+    <button class="btn btn-secondary" type="submit">Get Report</button>
+</form>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Title</th>
+        <th scope="col">Created By</th>
+        <th scope="col">Created Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model.NewsArticles != null)
+    {
+        @foreach (var article in Model.NewsArticles)
+        {
+            <tr>
+                <td>@article.NewsArticleId</td>
+                <td>@article.NewsTitle</td>
+                <td>@article.CreatedBy.AccountName</td>
+                <td>@article.CreatedDate</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>

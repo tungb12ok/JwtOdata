@@ -1,0 +1,92 @@
+﻿@page
+@model Page.Pages.Accounts.IndexModel
+@{
+    ViewData["Title"] = "Manage Accounts";
+}
+
+<h2>Manage Accounts</h2>
+
+<!-- Button to open create modal -->
+<button class="btn btn-primary" onclick="showCreateModal()">Create New Account</button>
+
+<!-- Modal for Create/Update -->
+<div class="modal" tabindex="-1" role="dialog" id="accountModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Create Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="accountForm">
+                    <input type="hidden" asp-for="Account.AccountId"/>
+                    <div class="form-group">
+                        <label asp-for="Account.AccountEmail"></label>
+                        <input asp-for="Account.AccountEmail" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Account.AccountPassword"></label>
+                        <input asp-for="Account.AccountPassword" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Account.AccountRole"></label>
+                        <input asp-for="Account.AccountRole" class="form-control"/>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="modalSubmitButton">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table to display accounts -->
+<table class="table">
+    <thead>
+    <tr>
+        <th>Account Id</th>
+        <th>Account Email</th>
+        <th>Account Role</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var account in Model.Accounts)
+    {
+        <tr>
+            <td>@account.AccountId</td>
+            <td>@account.AccountEmail</td>
+            <td>@account.AccountRole</td>
+            <td>
+                <form asp-page-handler="Delete" method="post">
+                    <input type="text" name="id" value="@account.AccountId" hidden=""/>
+                    <button type="button" class="btn btn-primary" onclick="showUpdateModal(@account.AccountId, '@account.AccountEmail', '@account.AccountRole')">Edit</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function showCreateModal() {
+            $('#modalTitle').text('Create Account');
+            $('#accountForm').attr('action', '?handler=Create');
+            $('#modalSubmitButton').text('Create');
+            $('#accountModal').modal('show');
+        }
+
+        function showUpdateModal(id, email, role) {
+            $('#modalTitle').text('Update Account');
+            $('#accountForm').attr('action', '?handler=Update&id=' + id);
+            $('#modalSubmitButton').text('Update');
+            $('#Account_AccountId').val(id);
+            $('#Account_AccountEmail').val(email);
+            $('#Account_AccountRole').val(role);
+            $('#accountModal').modal('show');
+        }
+    </script>
+}

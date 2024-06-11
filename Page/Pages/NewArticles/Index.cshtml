@@ -1,0 +1,139 @@
+@page
+@model Page.Pages.NewArticles.IndexModel
+@{
+    ViewData["Title"] = "Index";
+}
+<h1>News Articles</h1>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createNewsArticleModal">
+    Create New Article
+</button>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Article ID</th>
+        <th>Title</th>
+        <th>Created By</th>
+        <th>Created Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var article in Model.NewsArticles)
+    {
+    <tr>
+        <td>@article.NewsArticleId</td>
+        <td>@article.NewsTitle</td>
+        <td>@article.CreatedById</td>
+        <td>@article.CreatedDate</td>
+        <td>
+            <button class="btn btn-primary" onclick="editNewsArticle('@article.NewsArticleId')">Edit</button>
+            <form method="post" asp-page-handler="Delete" class="d-inline">
+                <input type="hidden" name="id" value="@article.NewsArticleId" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>
+
+<!-- Create News Article Modal -->
+<div class="modal fade" id="createNewsArticleModal" tabindex="-1" aria-labelledby="createNewsArticleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createNewsArticleModalLabel">Create News Article</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createNewsArticleForm" method="post" asp-page-handler="Create">
+                    <div class="mb-3">
+                        <label for="newsTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="newsTitle" name="NewsArticle.NewsTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newsContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="newsContent" name="NewsArticle.NewsContent"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryId" class="form-label">Category ID</label>
+                        <input type="number" class="form-control" id="categoryId" name="NewsArticle.CategoryId">
+                    </div>
+                    <div class="mb-3">
+                        <label for="createdById" class="form-label">Created By</label>
+                        <input type="number" class="form-control" id="createdById" name="NewsArticle.CreatedById">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm('createNewsArticleForm')">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit News Article Modal -->
+<div class="modal fade" id="editNewsArticleModal" tabindex="-1" aria-labelledby="editNewsArticleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNewsArticleModalLabel">Edit News Article</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editNewsArticleForm" method="post" asp-page-handler="Update">
+                    <input type="hidden" id="editNewsArticleId" name="NewsArticle.NewsArticleId">
+                    <div class="mb-3">
+                        <label for="editNewsTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="editNewsTitle" name="NewsArticle.NewsTitle">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNewsContent" class="form-label">Content</label>
+                        <textarea class="form-control" id="editNewsContent" name="NewsArticle.NewsContent"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryId" class="form-label">Category ID</label>
+                        <input type="number" class="form-control" id="editCategoryId" name="NewsArticle.CategoryId">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCreatedById" class="form-label">Created By</label>
+                        <input type="number" class="form-control" id="editCreatedById" name="NewsArticle.CreatedById">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm('editNewsArticleForm')">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function submitForm(formId) {
+        document.getElementById(formId).submit();
+    }
+
+    function editNewsArticle(id) {
+        $.ajax({
+            type: 'GET',
+            url: '/NewsArticles/Get?id=' + id,
+            success: function (data) {
+                $('#editNewsArticleId').val(data.newsArticleId);
+                $('#editNewsTitle').val(data.newsTitle);
+                $('#editNewsContent').val(data.newsContent);
+                $('#editCategoryId').val(data.categoryId);
+                $('#editCreatedById').val(data.createdById);
+                $('#editNewsArticleModal').modal('show');
+            },
+            error: function () {
+                alert('Failed to load article.');
+            }
+        });
+    }
+</script>
+}
